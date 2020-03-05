@@ -100,8 +100,8 @@ function polyfill() {
     // throw error when behavior is not supported
     throw new TypeError(
       'behavior member of ScrollOptions ' +
-        firstArg.behavior +
-        ' is not a valid value for enumeration ScrollBehavior.'
+      firstArg.behavior +
+      ' is not a valid value for enumeration ScrollBehavior.'
     );
   }
 
@@ -235,7 +235,7 @@ function polyfill() {
 
   // ORIGINAL METHODS OVERRIDES
   // w.scroll and w.scrollTo
-  w.scroll = w.scrollTo = function() {
+  w.scroll = w.scrollTo = function () {
     // avoid action when no arguments are passed
     if (arguments[0] === undefined) {
       return;
@@ -248,14 +248,14 @@ function polyfill() {
         arguments[0].left !== undefined
           ? arguments[0].left
           : typeof arguments[0] !== 'object'
-            ? arguments[0]
-            : w.scrollX || w.pageXOffset,
+          ? arguments[0]
+          : w.scrollX || w.pageXOffset,
         // use top prop, second argument if present or fallback to scrollY
         arguments[0].top !== undefined
           ? arguments[0].top
           : arguments[1] !== undefined
-            ? arguments[1]
-            : w.scrollY || w.pageYOffset
+          ? arguments[1]
+          : w.scrollY || w.pageYOffset
       );
 
       return;
@@ -275,7 +275,7 @@ function polyfill() {
   };
 
   // w.scrollBy
-  w.scrollBy = function() {
+  w.scrollBy = function () {
     // avoid action when no arguments are passed
     if (arguments[0] === undefined) {
       return;
@@ -306,7 +306,7 @@ function polyfill() {
   };
 
   // Element.prototype.scroll and Element.prototype.scrollTo
-  Element.prototype.scroll = Element.prototype.scrollTo = function() {
+  Element.prototype.scroll = Element.prototype.scrollTo = function () {
     // avoid action when no arguments are passed
     if (arguments[0] === undefined) {
       return;
@@ -347,7 +347,7 @@ function polyfill() {
   };
 
   // Element.prototype.scrollBy
-  Element.prototype.scrollBy = function() {
+  Element.prototype.scrollBy = function () {
     // avoid action when no arguments are passed
     if (arguments[0] === undefined) {
       return;
@@ -376,7 +376,7 @@ function polyfill() {
   };
 
   // Element.prototype.scrollIntoView
-  Element.prototype.scrollIntoView = function() {
+  Element.prototype.scrollIntoView = function () {
     // avoid smooth behavior if not required
     if (shouldBailOut(arguments[0]) === true) {
       original.scrollIntoView.call(
@@ -392,28 +392,35 @@ function polyfill() {
     var parentRects = scrollableParent.getBoundingClientRect();
     var clientRects = this.getBoundingClientRect();
 
+    var axis = arguments[0] && arguments[0].axis;
+
+    var scrollHoriz = !axis || axis === 'horiz' ? 1 : 0;
+    var scrollVert = !axis || axis === 'vert' ? 1 : 0;
+
     if (scrollableParent !== d.body) {
       // reveal element inside parent
       smoothScroll.call(
         this,
         scrollableParent,
-        scrollableParent.scrollLeft + clientRects.left - parentRects.left,
-        scrollableParent.scrollTop + clientRects.top - parentRects.top
+        scrollableParent.scrollLeft +
+        (clientRects.left - parentRects.left) * scrollHoriz,
+        scrollableParent.scrollTop +
+        (clientRects.top - parentRects.top) * scrollVert
       );
 
       // reveal parent in viewport unless is fixed
       if (w.getComputedStyle(scrollableParent).position !== 'fixed') {
         w.scrollBy({
-          left: parentRects.left,
-          top: parentRects.top,
+          left: parentRects.left * scrollHoriz,
+          top: parentRects.top * scrollVert,
           behavior: 'smooth'
         });
       }
     } else {
       // reveal element in viewport
       w.scrollBy({
-        left: clientRects.left,
-        top: clientRects.top,
+        left: clientRects.left * scrollHoriz,
+        top: clientRects.top * scrollVert,
         behavior: 'smooth'
       });
     }
