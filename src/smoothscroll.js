@@ -397,15 +397,38 @@ function polyfill() {
     var scrollHoriz = !axis || axis === 'horiz' ? 1 : 0;
     var scrollVert = !axis || axis === 'vert' ? 1 : 0;
 
+    var usePadding = arguments[0] && arguments[0].padding;
+
     if (scrollableParent !== d.body) {
+      // reveal element inside parent
+
+      var paddingVert;
+      var paddingHoriz;
+
+      if (usePadding) {
+        var parentStyle = getComputedStyle(scrollableParent);
+
+        paddingHoriz = parseInt(parentStyle.paddingLeft, 10);
+        paddingVert = parseInt(parentStyle.paddingTop, 10);
+      }
+
+      if (!paddingHoriz || isNaN(paddingHoriz)) {
+        paddingHoriz = 0;
+      }
+
+
+      if (!paddingVert || isNaN(paddingVert)) {
+        paddingVert = 0;
+      }
+
       // reveal element inside parent
       smoothScroll.call(
         this,
         scrollableParent,
         scrollableParent.scrollLeft +
-        (clientRects.left - parentRects.left) * scrollHoriz,
+        (clientRects.left - parentRects.left - paddingHoriz) * scrollHoriz,
         scrollableParent.scrollTop +
-        (clientRects.top - parentRects.top) * scrollVert
+        (clientRects.top - parentRects.top - paddingVert) * scrollVert
       );
 
       // reveal parent in viewport unless is fixed
