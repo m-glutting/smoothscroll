@@ -170,6 +170,11 @@ function polyfill() {
    * @returns {undefined}
    */
   function step(context) {
+
+    if (context.target && !document.body.contains(context.target)) {
+      return;
+    }
+
     var time = now();
     var value;
     var currentX;
@@ -201,7 +206,7 @@ function polyfill() {
    * @param {Number} y
    * @returns {undefined}
    */
-  function smoothScroll(el, x, y) {
+  function smoothScroll(el, x, y, target) {
     var scrollable;
     var startX;
     var startY;
@@ -229,7 +234,8 @@ function polyfill() {
       startX: startX,
       startY: startY,
       x: x,
-      y: y
+      y: y,
+      target: target
     });
   }
 
@@ -301,7 +307,8 @@ function polyfill() {
       w,
       d.body,
       ~~arguments[0].left + (w.scrollX || w.pageXOffset),
-      ~~arguments[0].top + (w.scrollY || w.pageYOffset)
+      ~~arguments[0].top + (w.scrollY || w.pageYOffset),
+      arguments[1]
     );
   };
 
@@ -445,7 +452,7 @@ function polyfill() {
         left: clientRects.left * scrollHoriz,
         top: clientRects.top * scrollVert,
         behavior: 'smooth'
-      });
+      }, this);
     }
   };
 }
@@ -457,3 +464,4 @@ if (typeof exports === 'object' && typeof module !== 'undefined') {
   // global
   polyfill();
 }
+
